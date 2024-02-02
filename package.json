@@ -1,5 +1,5 @@
 {
-    "name": "test_npm_package",
+    "name": "@twoodby/test_npm_package",
     "version": "0.0.1",
     "description": "Test NPM package",
     "main": "dist/index.js",
