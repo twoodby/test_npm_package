@@ -1,0 +1,30 @@
+name: test_npm_package-tag
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+          scope: '@twoodby'
+      - run: npm install
+      - name: Set Version Variable
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - run: npm version --commit-hooks false --git-tag-version false --allow-same-version $RELEASE_VERSION
+      - run: npm run build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/delete-package-versions@v3
+        with:
+            package-name: 'test_npm_package'
+            min-versions-to-keep: 3
+            delete-only-pre-release-versions: "true"
